@@ -4,6 +4,7 @@ import classes from "./AuthForm.module.css";
 import useHttp from "../../hooks/useHttp";
 import useInput from "../../hooks/useInput";
 import { FIREBASE_URL } from "../../helpers/helpers";
+import LoadingSpinner from "../UI/LoadingSpinner";
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -47,8 +48,6 @@ const AuthForm = () => {
   const formSubmitHandler = async (e) => {
     e.preventDefault();
 
-    // add validation
-
     if (isLogin) {
     } else {
       // create profile (sign up)
@@ -64,7 +63,12 @@ const AuthForm = () => {
           "Content-Type": "application-json",
         },
       });
-      console.log(data);
+      console.log(isLoading);
+      let errorMessage;
+      if (data.error) {
+        errorMessage = "Authentication failed";
+        alert(errorMessage);
+      }
     }
   };
 
@@ -105,6 +109,7 @@ const AuthForm = () => {
           )}
         </div>
         <div className={classes.actions}>
+          {isLoading ? <LoadingSpinner /> : ""}
           <button disabled={!formIsValid}>
             {isLogin ? "Login" : "Create Account"}
           </button>
