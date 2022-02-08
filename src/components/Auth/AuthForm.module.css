@@ -74,12 +74,3 @@
 .error-text {
   color: red;
 }
-
-button:disabled {
-  background-color: gray;
-  cursor: not-allowed;
-}
-
-button:disabled:hover {
-  background-color: gray;
-}

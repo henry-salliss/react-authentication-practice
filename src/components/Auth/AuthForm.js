@@ -83,7 +83,6 @@ const AuthForm = () => {
         setErrorMessage(response.error.message);
       }
 
-      console.log(response);
       context.login(response.idToken);
     } else {
       // create profile (sign up)

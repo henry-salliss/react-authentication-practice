@@ -5,3 +5,6 @@ export const SIGN_UP_URL =
 
 export const SIGN_IN_URL =
   "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=";
+
+export const CHANGE_PASSWORD_URL =
+  "https://identitytoolkit.googleapis.com/v1/accounts:update?key=";
