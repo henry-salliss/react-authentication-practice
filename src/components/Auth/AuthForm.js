@@ -1,15 +1,24 @@
-import { useEffect, useState } from "react";
+// react imports
+import { useContext, useEffect, useState } from "react";
+import { Fragment } from "react";
+import { createPortal } from "react-dom";
 
+// style import
 import classes from "./AuthForm.module.css";
-import useHttp from "../../hooks/useHttp";
-import useInput from "../../hooks/useInput";
-import { FIREBASE_URL } from "../../helpers/helpers";
+
+// component imports
 import LoadingSpinner from "../UI/LoadingSpinner";
 import ErrorModal from "../UI/ErrorModal";
-import { Fragment } from "react/cjs/react.production.min";
 import Backdrop from "../UI/Backdrop";
 
+// hook and helper imports
+import useHttp from "../../hooks/useHttp";
+import useInput from "../../hooks/useInput";
+import { FIREBASE_KEY, SIGN_IN_URL, SIGN_UP_URL } from "../../helpers/helpers";
+import AuthContext from "../../store/auth-context";
+
 const AuthForm = () => {
+  const context = useContext(AuthContext);
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -47,15 +56,17 @@ const AuthForm = () => {
     }
   }, [emailIsValid, passwordIsValid]);
 
+  // usehttp hook to make requests
   const { isLoading, sendRequest } = useHttp();
+
+  // handling user login or sign up
   const formSubmitHandler = async (e) => {
     e.preventDefault();
 
+    // handling the user attempting to login
     if (isLogin) {
-    } else {
-      // create profile (sign up)
-      const data = await sendRequest({
-        url: `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_URL}`,
+      const response = await sendRequest({
+        url: `${SIGN_IN_URL}${FIREBASE_KEY}`,
         method: "POST",
         body: {
           email: emailValue,
@@ -66,10 +77,31 @@ const AuthForm = () => {
           "Content-Type": "application-json",
         },
       });
-      // let errorMessage;
-      if (data.error) {
+
+      if (response.error) {
         setError(true);
-        setErrorMessage(data.error.message);
+        setErrorMessage(response.error.message);
+      }
+
+      console.log(response);
+      context.login(response.idToken);
+    } else {
+      // create profile (sign up)
+      const response = await sendRequest({
+        url: `${SIGN_UP_URL}${FIREBASE_KEY}`,
+        method: "POST",
+        body: {
+          email: emailValue,
+          password: passwordValue,
+          returnSecureToken: true,
+        },
+        headers: {
+          "Content-Type": "application-json",
+        },
+      });
+      if (response.error) {
+        setError(true);
+        setErrorMessage(response.error.message);
       }
     }
   };
@@ -80,15 +112,17 @@ const AuthForm = () => {
 
   return (
     <Fragment>
-      {error && (
-        <Backdrop onRemoveError={errorHandler}>
-          <ErrorModal
-            message={errorMessage}
-            title="An error has occured"
-            onRemoveError={errorHandler}
-          />
-        </Backdrop>
-      )}
+      {error &&
+        createPortal(
+          <Backdrop onRemoveError={errorHandler}>
+            <ErrorModal
+              message={errorMessage}
+              title="An error has occured"
+              onRemoveError={errorHandler}
+            />
+          </Backdrop>,
+          document.querySelector(".backdrop-root")
+        )}
       <section className={classes.auth}>
         <h1>{isLogin ? "Login" : "Sign Up"}</h1>
         <form onSubmit={formSubmitHandler}>
