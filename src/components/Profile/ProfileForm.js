@@ -8,8 +8,10 @@ import LoadingSpinner from "../UI/LoadingSpinner";
 import { createPortal } from "react-dom";
 import Backdrop from "../UI/Backdrop";
 import ErrorModal from "../UI/ErrorModal";
+import { useHistory } from "react-router-dom";
 
 const ProfileForm = () => {
+  const history = useHistory();
   const context = useContext(AuthContext);
 
   const {
@@ -51,6 +53,8 @@ const ProfileForm = () => {
       setErrorMessage(response.error.message);
     }
     console.log(response);
+    // redirect user
+    history.replace("/");
   };
 
   const errorHandler = () => {

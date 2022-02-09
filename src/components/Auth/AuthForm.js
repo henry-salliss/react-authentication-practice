@@ -2,6 +2,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Fragment } from "react";
 import { createPortal } from "react-dom";
+import { useHistory } from "react-router-dom";
 
 // style import
 import classes from "./AuthForm.module.css";
@@ -18,6 +19,7 @@ import { FIREBASE_KEY, SIGN_IN_URL, SIGN_UP_URL } from "../../helpers/helpers";
 import AuthContext from "../../store/auth-context";
 
 const AuthForm = () => {
+  const history = useHistory();
   const context = useContext(AuthContext);
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(false);
@@ -82,8 +84,11 @@ const AuthForm = () => {
         setError(true);
         setErrorMessage(response.error.message);
       }
+      const expirationTime = new Date(
+        new Date().getTime() + +(response.expiresIn * 1000)
+      );
 
-      context.login(response.idToken);
+      context.login(response.idToken, expirationTime.toString());
     } else {
       // create profile (sign up)
       const response = await sendRequest({
@@ -102,6 +107,9 @@ const AuthForm = () => {
         setError(true);
         setErrorMessage(response.error.message);
       }
+
+      // redirect user
+      history.replace("/");
     }
   };
 
