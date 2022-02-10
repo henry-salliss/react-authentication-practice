@@ -13,7 +13,7 @@ const useHttp = () => {
         body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
         headers: requestConfig.headers ? requestConfig.headers : {},
       });
-      if (!response.ok) console.log("Request failed");
+      if (!response.ok) console.log(response);
       const data = await response.json();
       setIsLoading(false);
       setData(data);

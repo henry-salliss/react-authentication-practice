@@ -8,7 +8,6 @@ import HomePage from "./pages/HomePage";
 import { useContext } from "react";
 
 function App() {
-  console.log([..."👩‍👦‍👦"]);
   const context = useContext(AuthContext);
   return (
     <Layout>

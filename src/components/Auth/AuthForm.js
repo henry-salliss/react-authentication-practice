@@ -87,7 +87,7 @@ const AuthForm = () => {
       const expirationTime = new Date(
         new Date().getTime() + +(response.expiresIn * 1000)
       );
-
+      console.log(response);
       context.login(response.idToken, expirationTime.toString());
     } else {
       // create profile (sign up)
@@ -103,6 +103,7 @@ const AuthForm = () => {
           "Content-Type": "application-json",
         },
       });
+      console.log(response);
       if (response.error) {
         setError(true);
         setErrorMessage(response.error.message);
